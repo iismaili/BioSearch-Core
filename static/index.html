@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BioSearch-Core | İleri Düzey Görüntü İşleme & Biyometrik Yüz Tanıma</title>
+  <meta name="description" content="Klasik ve modern bilgisayarla görme algoritmalarını adım adım görselleştiren ve derin öğrenme ile fotoğraflarda kişi eşleştiren web platformu.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app-wrapper">
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="logo-icon">👁️</div>
+        <div class="logo-text">
+          <h1>BioSearch-Core</h1>
+          <p>Bilgisayarla Görme Hattı & Biyometrik Kişi Eşleştirme</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <span class="stage-badge" id="system-status-badge">● Sistem Hazır</span>
+        <button class="btn btn-secondary" id="btn-quick-demo" title="Örnek verilerle anında tam akış çalıştır">⚡ Hızlı Demo</button>
+      </div>
+    </header>
+
+    <nav class="stage-nav" aria-label="Aşama Navigasyonu">
+      <button class="nav-tab-btn active" id="tab-btn-stage1" data-target="tab-stage1">
+        <span class="step-num">1</span>
+        <span>Aşama 1: Görüntü Analizi & Biyometrik Hat (11 Adım)</span>
+      </button>
+      <button class="nav-tab-btn" id="tab-btn-stage2" data-target="tab-stage2">
+        <span class="step-num">2</span>
+        <span>Aşama 2: Fotoğrafta Kişi Arama & Eşleştirme</span>
+      </button>
+    </nav>
+
+    <!-- STAGE 1 VIEW -->
+    <main class="tab-pane active" id="tab-stage1">
+      <section class="hero-card">
+        <div class="hero-title-group">
+          <div>
+            <h2>1. Aşama: Görüntü İşleme Hattı & Yüz Analizi</h2>
+            <p>Bir portre fotoğrafı yükleyin. Sistem görüntüyü gri tonlama, Gauss filtreleme, CLAHE, Canny kenar bulma, Otsu segmentasyonu, morfoloji, keskinleştirme, YuNet yüz tespiti, 5-nokta geometrik hizalama ve 128D derin özellik çıkarımı aşamalarından geçirip her adımı açıklar.</p>
+          </div>
+          <div class="stage-badge">11 Analitik Aşama</div>
+        </div>
+
+        <div class="upload-grid">
+          <div class="dropzone" id="dropzone-stage1">
+            <input type="file" id="file-input-stage1" accept="image/*" style="display:none">
+            <div class="dropzone-icon">📁</div>
+            <div class="dropzone-text">Fotoğrafı Buraya Sürükleyin veya Seçin</div>
+            <div class="dropzone-sub">PNG, JPG, WEBP desteklenir (Önerilen: Net portre fotoğrafı)</div>
+          </div>
+
+          <div class="sample-pick-box">
+            <div class="sample-pick-title">Veya Hazır Test Portresini Seçin</div>
+            <div class="sample-chips" id="sample-chips-stage1">
+              <div class="sample-chip" id="chip-sample-person">
+                <img src="" alt="Örnek Portre" class="sample-chip-img" id="thumb-sample-person">
+                <div class="sample-chip-info">
+                  <h4>Örnek Referans Kişi</h4>
+                  <p>Stüdyo aydınlatmalı, gözlüklü genç erkek portresi</p>
+                </div>
+                <span class="stage-badge">Seç</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-bar">
+          <div class="preview-row" id="preview-row-stage1" style="display:none">
+            <img src="" alt="Seçilen Önizleme" class="preview-thumb" id="selected-thumb-stage1">
+            <div>
+              <div style="font-size:13px; font-weight:600" id="selected-name-stage1">Görüntü Hazır</div>
+              <div style="font-size:11px; color:var(--text-muted)">Analize hazır durumda</div>
+            </div>
+          </div>
+          <button class="btn btn-primary" id="btn-run-stage1" disabled>
+            <span>Görüntü İşleme Hattını Başlat</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Stage 1 Telemetry Bar -->
+      <section class="telemetry-bar" id="telemetry-bar-stage1" style="display:none">
+        <div class="tele-item">
+          <span class="tele-label">İşlenen Aşamalar</span>
+          <span class="tele-val" id="tele-steps-count">11 / 11</span>
+        </div>
+        <div class="tele-item">
+          <span class="tele-label">İşlem Süresi</span>
+          <span class="tele-val" id="tele-elapsed-time">-- ms</span>
+        </div>
+        <div class="tele-item">
+          <span class="tele-label">Yüz Tespiti Durumu</span>
+          <span class="tele-val" id="tele-face-status" style="color:var(--emerald)">Doğrulandı</span>
+        </div>
+        <div class="tele-item">
+          <span class="tele-label">Embedding Boyutu</span>
+          <span class="tele-val" id="tele-embed-dim">128 Float Vektör</span>
+        </div>
+      </section>
+
+      <!-- Stages Cards Grid -->
+      <section class="stages-grid" id="stages-grid-container">
+        <!-- Dynamically filled with 11 cards -->
+      </section>
+
+      <!-- Stage 1 Completion / Next Stage Lock Banner -->
+      <section class="reference-lock-banner" id="reference-lock-banner" style="display:none">
+        <div class="reference-lock-info">
+          <img src="" alt="Referans Yüz" class="ref-avatar" id="ref-banner-avatar">
+          <div class="ref-desc">
+            <h3>Hedef Kişi Biyometrisi Kilitlendi!</h3>
+            <p>11 aşamadan başarıyla geçildi ve 128 boyutlu özellik vektörü hafızaya alındı. Şimdi 2. aşamada bu kişiyi başka bir fotoğrafta (örneğin grup fotoğrafında) arayabilirsiniz.</p>
+          </div>
+        </div>
+        <button class="btn btn-emerald" id="btn-proceed-to-stage2">
+          <span>2. Aşamaya Geç: Bu Kişiyi Ara ➔</span>
+        </button>
+      </section>
+    </main>
+
+    <!-- STAGE 2 VIEW -->
+    <main class="tab-pane" id="tab-stage2">
+      <!-- Target Reference Sticky Info -->
+      <div class="reference-lock-banner" style="margin-top:0; margin-bottom:24px;">
+        <div class="reference-lock-info">
+          <img src="" alt="Referans Yüz" class="ref-avatar" id="stage2-ref-avatar">
+          <div class="ref-desc">
+            <h3 id="stage2-ref-title">Aranan Hedef: 1. Aşamada Çıkarılan Kişi</h3>
+            <p id="stage2-ref-desc">128D SFace öznitelik vektörü referans olarak kullanılacaktır.</p>
+          </div>
+        </div>
+        <button class="btn btn-secondary" id="btn-back-to-stage1">← 1. Aşamaya Dön / Kişiyi Değiştir</button>
+      </div>
+
+      <section class="hero-card">
+        <div class="hero-title-group">
+          <div>
+            <h2>2. Aşama: Fotoğrafta Kişi Arama & Eşleştirme Testi</h2>
+            <p>İçinde aranan kişinin bulunabileceği veya bulunmadığı 2. bir fotoğraf yükleyin (tek kişi veya kalabalık grup fotoğrafı). Sistem fotoğraftaki tüm yüzleri tek tek tespit eder, özellik vektörlerini çıkarır ve referans kişiyle kosinüs benzerliğini hesaplar.</p>
+          </div>
+          <div class="stage-badge">Biyometrik Doğrulama</div>
+        </div>
+
+        <div class="upload-grid">
+          <div class="dropzone" id="dropzone-stage2">
+            <input type="file" id="file-input-stage2" accept="image/*" style="display:none">
+            <div class="dropzone-icon">🔍</div>
+            <div class="dropzone-text">2. Fotoğrafı Sürükleyin veya Seçin</div>
+            <div class="dropzone-sub">Grup veya tek kişi fotoğrafı (PNG, JPG, WEBP)</div>
+          </div>
+
+          <div class="sample-pick-box">
+            <div class="sample-pick-title">Test İçin Hazır Senaryolar</div>
+            <div class="sample-chips" id="sample-chips-stage2">
+              <div class="sample-chip" id="chip-sample-group-match">
+                <img src="" alt="Grup Pozitif" class="sample-chip-img" id="thumb-sample-group-match">
+                <div class="sample-chip-info">
+                  <h4>Grup Fotoğrafı (Kişi Mevcut)</h4>
+                  <p>3 iş arkadaşı (hedef kişi ortada yer alıyor)</p>
+                </div>
+                <span class="stage-badge" style="color:var(--emerald); border-color:var(--emerald)">Pozitif Test</span>
+              </div>
+              <div class="sample-chip" id="chip-sample-group-nomatch">
+                <img src="" alt="Grup Negatif" class="sample-chip-img" id="thumb-sample-group-nomatch">
+                <div class="sample-chip-info">
+                  <h4>Farklı Grup Fotoğrafı (Kişi Yok)</h4>
+                  <p>Toplantı masasındaki 3 farklı meslektaş</p>
+                </div>
+                <span class="stage-badge" style="color:var(--rose); border-color:var(--rose)">Negatif Test</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-bar">
+          <div class="preview-row" id="preview-row-stage2" style="display:none">
+            <img src="" alt="Seçilen Arama Resmi" class="preview-thumb" id="selected-thumb-stage2">
+            <div>
+              <div style="font-size:13px; font-weight:600" id="selected-name-stage2">Fotoğraf Seçildi</div>
+              <div style="font-size:11px; color:var(--text-muted)">Taramaya hazır</div>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:16px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <label for="threshold-slider" style="font-size:12px; color:var(--text-muted);">Eşik:</label>
+              <input type="range" id="threshold-slider" min="0.25" max="0.55" step="0.01" value="0.363" style="cursor:pointer">
+              <span id="threshold-val-label" style="font-size:12px; font-family:var(--font-mono); color:var(--primary);">0.363</span>
+            </div>
+            <button class="btn btn-emerald" id="btn-run-stage2" disabled>
+              <span>Kişiyi Ara ve Eşleştir</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stage 2 Results Container -->
+      <section id="stage2-results-container" style="display:none">
+        <!-- Verdict Banner -->
+        <div class="verdict-card matched" id="verdict-card">
+          <div class="verdict-main">
+            <div class="verdict-icon" id="verdict-icon">✓</div>
+            <div class="verdict-texts">
+              <h3 id="verdict-title">Kişi Başarıyla Bulundu!</h3>
+              <p id="verdict-desc">Aday #2 en yüksek benzerlik skoru ile eşleşti.</p>
+            </div>
+          </div>
+          <div class="verdict-meter">
+            <span class="meter-num" id="verdict-score-num">%92.4</span>
+            <span class="meter-label">Benzerlik Skoru</span>
+          </div>
+        </div>
+
+        <div class="stage2-split">
+          <!-- Left: Annotated Canvas -->
+          <div class="match-canvas-card">
+            <div class="canvas-header">
+              <h4 style="font-size:15px; font-weight:700">Taranan Görüntü & Bounding Box Analizi</h4>
+              <span class="stage-badge" id="badge-total-faces">5 Yüz Tespit Edildi</span>
+            </div>
+            <div class="annotated-img-wrap">
+              <img src="" alt="Analiz Edilen Sahne" class="annotated-img" id="annotated-result-img">
+            </div>
+            <p style="font-size:12px; color:var(--text-muted); margin-top:10px;">
+              Parlak yeşil çerçeve ve beyaz köşe aksanları 1. aşamadaki hedef kişiyle eşleşen yüzü temsil eder. Gri/mavi çerçeveler fotoğraftaki diğer kişileri temsil eder.
+            </p>
+          </div>
+
+          <!-- Right: Side-by-Side Biometric Comparison -->
+          <div class="compare-card">
+            <h4 style="font-size:15px; font-weight:700">Biyometrik Karşılaştırma</h4>
+            
+            <div class="side-by-side-wrap">
+              <div class="compare-box target">
+                <div class="compare-box-label">Hedef Portre (Aşama 1)</div>
+                <img src="" alt="Hedef Yüz" id="compare-target-img">
+              </div>
+              <div class="compare-box matched-cand">
+                <div class="compare-box-label" id="compare-cand-label">Fotoğraftaki Eşleşen Yüz</div>
+                <img src="" alt="Bulunan Yüz" id="compare-cand-img">
+              </div>
+            </div>
+
+            <div class="heatmap-box" id="heatmap-container">
+              <div class="compare-box-label">Öznitelik / Yoğunluk Fark Haritası (Heatmap)</div>
+              <img src="" alt="Fark Isı Haritası" id="compare-heatmap-img">
+              <p style="font-size:11px; color:var(--text-dim); margin-top:6px;">Mavi tonlar yüksek benzerlik gösteren ortak anatomik bölgeleri belirtir.</p>
+            </div>
+
+            <div class="candidates-table-wrap">
+              <div class="candidates-table-title">Tespit Edilen Tüm Adaylar</div>
+              <div id="candidates-list-container">
+                <!-- Dynamically filled with candidate rows -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Image Inspection Modal -->
+    <div class="modal-backdrop" id="image-modal">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h4 id="modal-title" style="font-size:16px; font-weight:700">Aşama İnceleme</h4>
+          <button class="modal-close-btn" id="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-content">
+          <img src="" alt="Büyütülmüş Görsel" class="modal-img" id="modal-img">
+          <p id="modal-desc" style="font-size:13px; color:var(--text-muted); line-height:1.5;"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert Toast Notification -->
+    <div class="alert-toast" id="alert-toast">
+      <span id="toast-icon">ℹ️</span>
+      <span id="toast-msg">Bildirim mesajı</span>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
